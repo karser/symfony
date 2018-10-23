@@ -135,7 +135,7 @@
     "minimum-stability": "dev",
     "extra": {
         "branch-alias": {
-            "dev-master": "3.4-dev"
+            "dev-3.4-property-accessor-singular-plural-conflict": "3.4-dev"
         }
     }
 }
