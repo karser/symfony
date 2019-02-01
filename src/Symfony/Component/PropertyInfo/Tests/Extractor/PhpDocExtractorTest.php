@@ -239,7 +239,8 @@ class OmittedParamTagTypeDocBlock
     }
 }
 
-class ConstructorOverridesPropertyDocBlock {
+class ConstructorOverridesPropertyDocBlock
+{
     /** @var string */
     private $timezone;
     /** @var \DateTimeInterface */
@@ -247,7 +248,7 @@ class ConstructorOverridesPropertyDocBlock {
 
     /**
      * @param string $timezone
-     * @param int $date Timestamp
+     * @param int    $date     Timestamp
      */
     public function __construct($timezone, $date)
     {
