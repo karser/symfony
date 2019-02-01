@@ -213,6 +213,13 @@ class PhpDocExtractorTest extends TestCase
     {
         $this->assertEquals($types, $this->extractor->getTypes('Symfony\Component\PropertyInfo\Tests\Fixtures\DockBlockFallback', $property));
     }
+
+    public function testConstructorOverridesPropertyDocBlock()
+    {
+        /** @var Type[] $types */
+        $types = $this->extractor->getTypes('Symfony\Component\PropertyInfo\Tests\PhpDocExtractor\ConstructorOverridesPropertyDocBlock', 'date', []);
+        self::assertEquals('int', $types[0]->getBuiltinType());
+    }
 }
 
 class EmptyDocBlock
@@ -229,5 +236,22 @@ class OmittedParamTagTypeDocBlock
      */
     public function setOmittedType(array $omittedTagType)
     {
+    }
+}
+
+class ConstructorOverridesPropertyDocBlock {
+    /** @var string */
+    private $timezone;
+    /** @var \DateTimeInterface */
+    private $date;
+
+    /**
+     * @param string $timezone
+     * @param int $date Timestamp
+     */
+    public function __construct($timezone, $date)
+    {
+        $this->timezone = $timezone;
+        $this->date = \DateTime::createFromFormat('U', $date);
     }
 }

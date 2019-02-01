@@ -170,6 +170,10 @@ class PhpDocExtractor implements PropertyDescriptionExtractorInterface, Property
         $ucFirstProperty = ucfirst($property);
 
         switch (true) {
+            case $docBlock = $this->getDocBlockFromConstructor($class, $property):
+                $data = [$docBlock, self::MUTATOR, null];
+                break;
+
             case $docBlock = $this->getDocBlockFromProperty($class, $property):
                 $data = [$docBlock, self::PROPERTY, null];
                 break;
@@ -187,6 +191,37 @@ class PhpDocExtractor implements PropertyDescriptionExtractorInterface, Property
         }
 
         return $this->docBlocks[$propertyHash] = $data;
+    }
+
+    /**
+     * Gets the DocBlock from a constructor.
+     *
+     * @param string $class
+     * @param string $property
+     *
+     * @return DocBlock|null
+     */
+    private function getDocBlockFromConstructor($class, $property)
+    {
+        try {
+            $reflectionClass = new \ReflectionClass($class);
+        } catch (\ReflectionException $e) {
+            return null;
+        }
+        $reflectionConstructor = $reflectionClass->getConstructor();
+        if (!$reflectionConstructor) {
+            return null;
+        }
+        if (!preg_match('/\@param.+?\$'.$property.'/', $reflectionConstructor->getDocComment(), $matches)) {
+            return null;
+        }
+        list($docComment) = $matches;
+
+        try {
+            return $this->docBlockFactory->create($docComment, $this->contextFactory->createFromReflector($reflectionConstructor));
+        } catch (\InvalidArgumentException $e) {
+            return null;
+        }
     }
 
     /**
