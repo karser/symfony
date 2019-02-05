@@ -215,6 +215,7 @@ class PhpDocExtractor implements PropertyDescriptionExtractorInterface, Property
 
         try {
             $docBlock = $this->docBlockFactory->create($reflectionConstructor, $this->contextFactory->createFromReflector($reflectionConstructor));
+
             return $this->filterDocBlockParams($docBlock, $property);
         } catch (\InvalidArgumentException $e) {
             return null;
@@ -223,12 +224,13 @@ class PhpDocExtractor implements PropertyDescriptionExtractorInterface, Property
 
     /**
      * @param DocBlock $docBlock
-     * @param string $allowedParam
+     * @param string   $allowedParam
+     *
      * @return DocBlock
      */
     private function filterDocBlockParams(DocBlock $docBlock, $allowedParam)
     {
-        $tags = array_values(array_filter($docBlock->getTagsByName('param'), function($tag) use ($allowedParam) {
+        $tags = array_values(array_filter($docBlock->getTagsByName('param'), function ($tag) use ($allowedParam) {
             return $tag instanceof DocBlock\Tags\Param && $allowedParam === $tag->getVariableName();
         }));
 
