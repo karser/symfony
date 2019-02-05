@@ -212,16 +212,28 @@ class PhpDocExtractor implements PropertyDescriptionExtractorInterface, Property
         if (!$reflectionConstructor) {
             return null;
         }
-        if (!preg_match('/\@param.+?\$'.$property.'/', $reflectionConstructor->getDocComment(), $matches)) {
-            return null;
-        }
-        list($docComment) = $matches;
 
         try {
-            return $this->docBlockFactory->create($docComment, $this->contextFactory->createFromReflector($reflectionConstructor));
+            $docBlock = $this->docBlockFactory->create($reflectionConstructor, $this->contextFactory->createFromReflector($reflectionConstructor));
+            return $this->filterDocBlockParams($docBlock, $property);
         } catch (\InvalidArgumentException $e) {
             return null;
         }
+    }
+
+    /**
+     * @param DocBlock $docBlock
+     * @param string $allowedParam
+     * @return DocBlock
+     */
+    private function filterDocBlockParams(DocBlock $docBlock, $allowedParam)
+    {
+        $tags = array_values(array_filter($docBlock->getTagsByName('param'), function($tag) use ($allowedParam) {
+            return $tag instanceof DocBlock\Tags\Param && $allowedParam === $tag->getVariableName();
+        }));
+
+        return new DocBlock($docBlock->getSummary(), $docBlock->getDescription(), $tags, $docBlock->getContext(),
+            $docBlock->getLocation(), $docBlock->isTemplateStart(), $docBlock->isTemplateEnd());
     }
 
     /**
