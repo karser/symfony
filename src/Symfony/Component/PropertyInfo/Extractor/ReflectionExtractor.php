@@ -151,8 +151,9 @@ class ReflectionExtractor implements PropertyListExtractorInterface, PropertyTyp
     }
 
     /**
-     * @param string $property
+     * @param string            $property
      * @param \ReflectionMethod $reflectionConstructor
+     *
      * @return \ReflectionParameter|null
      */
     private function getReflectionParameterFromConstructor($property, \ReflectionMethod $reflectionConstructor)
@@ -163,6 +164,7 @@ class ReflectionExtractor implements PropertyListExtractorInterface, PropertyTyp
                 return $reflectionParameter;
             }
         }
+
         return null;
     }
 
@@ -225,7 +227,8 @@ class ReflectionExtractor implements PropertyListExtractorInterface, PropertyTyp
 
     /**
      * @param \ReflectionParameter $reflectionParameter
-     * @param \ReflectionMethod $reflectionMethod
+     * @param \ReflectionMethod    $reflectionMethod
+     *
      * @return Type|null
      */
     private function extractFromReflectionMethod(\ReflectionParameter $reflectionParameter, \ReflectionMethod $reflectionMethod)
@@ -240,6 +243,7 @@ class ReflectionExtractor implements PropertyListExtractorInterface, PropertyTyp
             if (!$reflectionType->isBuiltin() && Type::BUILTIN_TYPE_ARRAY === $type->getBuiltinType()) {
                 return null;
             }
+
             return $type;
         } elseif (preg_match('/^(?:[^ ]++ ){4}([a-zA-Z_\x7F-\xFF][^ ]++)/', $reflectionParameter, $info)) {
             if (Type::BUILTIN_TYPE_ARRAY === $info[1]) {
@@ -249,6 +253,7 @@ class ReflectionExtractor implements PropertyListExtractorInterface, PropertyTyp
             } else {
                 $type = new Type(Type::BUILTIN_TYPE_OBJECT, $reflectionParameter->allowsNull(), $this->resolveTypeName($info[1], $reflectionMethod));
             }
+
             return $type;
         }
 
