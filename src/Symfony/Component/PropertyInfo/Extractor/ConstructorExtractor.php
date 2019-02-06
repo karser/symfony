@@ -21,7 +21,7 @@ use Symfony\Component\PropertyInfo\PropertyTypeExtractorInterface;
  */
 class ConstructorExtractor implements PropertyTypeExtractorInterface
 {
-    /** @var ConstructorArgumentTypeExtractorInterface[] */
+    /** @var iterable|ConstructorArgumentTypeExtractorInterface[] */
     private $extractors;
 
     /**
