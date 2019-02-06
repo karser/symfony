@@ -35,6 +35,6 @@ class ConstructorExtractorTest extends TestCase
     public function testGetTypes_ifNoExtractors()
     {
         $extractor = new ConstructorExtractor([]);
-        $this->assertEquals(null, $extractor->getTypes('Foo', 'bar', []));
+        $this->assertNull($extractor->getTypes('Foo', 'bar', []));
     }
 }

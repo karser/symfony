@@ -150,6 +150,7 @@ class ReflectionExtractor implements PropertyListExtractorInterface, PropertyTyp
 
         if ($reflectionParameter && $reflectionType = $reflectionParameter->getType()) {
             $type = $this->extractFromReflectionType($reflectionType, $reflectionConstructor);
+
             return [$type];
         }
 

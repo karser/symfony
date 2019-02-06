@@ -17,8 +17,8 @@ class ConstructorDummy
     private $dateTime;
 
     /**
-     * @param \DateTimeZone $timezone
-     * @param int $date Timestamp
+     * @param \DateTimeZone      $timezone
+     * @param int                $date       Timestamp
      * @param \DateTimeInterface $dateObject
      */
     public function __construct(\DateTimeZone $timezone, $date, $dateObject, \DateTime $dateTime)

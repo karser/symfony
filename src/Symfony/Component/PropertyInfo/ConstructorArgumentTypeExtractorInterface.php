@@ -12,7 +12,7 @@
 namespace Symfony\Component\PropertyInfo;
 
 /**
- * Infers the constructor argument type
+ * Infers the constructor argument type.
  *
  * @author Dmitrii Poddubnyi <dpoddubny@gmail.com>
  */

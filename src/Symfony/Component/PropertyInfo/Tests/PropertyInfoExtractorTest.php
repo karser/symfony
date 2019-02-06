@@ -50,6 +50,7 @@ class PropertyInfoExtractorTest extends AbstractPropertyInfoExtractorTest
         $phpdocExtractor = new PhpDocExtractor();
         $reflectionExtractor = new ReflectionExtractor();
         $constructorExtractor = new ConstructorExtractor([$phpdocExtractor, $reflectionExtractor]);
+
         return new PropertyInfoExtractor([], [$constructorExtractor, $phpdocExtractor, $reflectionExtractor]);
     }
 }
