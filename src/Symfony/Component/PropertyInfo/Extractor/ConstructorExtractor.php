@@ -25,9 +25,9 @@ class ConstructorExtractor implements PropertyTypeExtractorInterface
     private $extractors;
 
     /**
-     * @param ConstructorArgumentTypeExtractorInterface[] $extractors
+     * @param iterable|ConstructorArgumentTypeExtractorInterface[] $extractors
      */
-    public function __construct(array $extractors)
+    public function __construct($extractors = [])
     {
         $this->extractors = $extractors;
     }
