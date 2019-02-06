@@ -12,6 +12,7 @@
 namespace Symfony\Component\PropertyInfo\Extractor;
 
 use Symfony\Component\Inflector\Inflector;
+use Symfony\Component\PropertyInfo\ConstructorArgumentTypeExtractorInterface;
 use Symfony\Component\PropertyInfo\PropertyAccessExtractorInterface;
 use Symfony\Component\PropertyInfo\PropertyListExtractorInterface;
 use Symfony\Component\PropertyInfo\PropertyTypeExtractorInterface;
@@ -24,7 +25,7 @@ use Symfony\Component\PropertyInfo\Type;
  *
  * @final since version 3.3
  */
-class ReflectionExtractor implements PropertyListExtractorInterface, PropertyTypeExtractorInterface, PropertyAccessExtractorInterface
+class ReflectionExtractor implements PropertyListExtractorInterface, PropertyTypeExtractorInterface, PropertyAccessExtractorInterface, ConstructorArgumentTypeExtractorInterface
 {
     /**
      * @internal
@@ -124,6 +125,35 @@ class ReflectionExtractor implements PropertyListExtractorInterface, PropertyTyp
         if ($fromAccessor = $this->extractFromAccessor($class, $property)) {
             return $fromAccessor;
         }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getTypesFromConstructor($class, $property)
+    {
+        try {
+            $reflection = new \ReflectionClass($class);
+        } catch (\ReflectionException $e) {
+            return null;
+        }
+        if (!$reflectionConstructor = $reflection->getConstructor()) {
+            return null;
+        }
+        $reflectionParameter = null;
+        foreach ($reflectionConstructor->getParameters() as $parameter) {
+            if ($parameter->getName() === $property) {
+                $reflectionParameter = $parameter;
+                break;
+            }
+        }
+
+        if ($reflectionParameter && $reflectionType = $reflectionParameter->getType()) {
+            $type = $this->extractFromReflectionType($reflectionType, $reflectionConstructor);
+            return [$type];
+        }
+
+        return null;
     }
 
     /**

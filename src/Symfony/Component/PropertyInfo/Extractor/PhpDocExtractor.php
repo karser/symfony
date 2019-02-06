@@ -15,6 +15,7 @@ use phpDocumentor\Reflection\DocBlock;
 use phpDocumentor\Reflection\DocBlockFactory;
 use phpDocumentor\Reflection\DocBlockFactoryInterface;
 use phpDocumentor\Reflection\Types\ContextFactory;
+use Symfony\Component\PropertyInfo\ConstructorArgumentTypeExtractorInterface;
 use Symfony\Component\PropertyInfo\PropertyDescriptionExtractorInterface;
 use Symfony\Component\PropertyInfo\PropertyTypeExtractorInterface;
 use Symfony\Component\PropertyInfo\Type;
@@ -27,7 +28,7 @@ use Symfony\Component\PropertyInfo\Util\PhpDocTypeHelper;
  *
  * @final since version 3.3
  */
-class PhpDocExtractor implements PropertyDescriptionExtractorInterface, PropertyTypeExtractorInterface
+class PhpDocExtractor implements PropertyDescriptionExtractorInterface, PropertyTypeExtractorInterface, ConstructorArgumentTypeExtractorInterface
 {
     const PROPERTY = 0;
     const ACCESSOR = 1;
@@ -152,6 +153,31 @@ class PhpDocExtractor implements PropertyDescriptionExtractorInterface, Property
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function getTypesFromConstructor($class, $property)
+    {
+        $docBlock = $this->getDocBlockFromConstructor($class, $property);
+
+        if (!$docBlock) {
+            return;
+        }
+
+        $types = [];
+        /** @var DocBlock\Tags\Var_|DocBlock\Tags\Return_|DocBlock\Tags\Param $tag */
+        foreach ($docBlock->getTagsByName('param') as $tag) {
+            if ($tag && null !== $tag->getType()) {
+                $types = array_merge($types, $this->phpDocTypeHelper->getTypes($tag->getType()));
+            }
+        }
+
+        if (!isset($types[0])) {
+            return;
+        }
+        return $types;
+    }
+
+    /**
      * Gets the DocBlock for this property.
      *
      * @param string $class
@@ -170,10 +196,6 @@ class PhpDocExtractor implements PropertyDescriptionExtractorInterface, Property
         $ucFirstProperty = ucfirst($property);
 
         switch (true) {
-            case $docBlock = $this->getDocBlockFromConstructor($class, $property):
-                $data = [$docBlock, self::MUTATOR, null];
-                break;
-
             case $docBlock = $this->getDocBlockFromProperty($class, $property):
                 $data = [$docBlock, self::PROPERTY, null];
                 break;

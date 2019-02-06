@@ -214,11 +214,23 @@ class PhpDocExtractorTest extends TestCase
         $this->assertEquals($types, $this->extractor->getTypes('Symfony\Component\PropertyInfo\Tests\Fixtures\DockBlockFallback', $property));
     }
 
-    public function testConstructorOverridesPropertyDocBlock()
+    /**
+     * @dataProvider constructorTypesProvider
+     */
+    public function testExtractConstructorTypes($property, array $type = null)
     {
-        /** @var Type[] $types */
-        $types = $this->extractor->getTypes('Symfony\Component\PropertyInfo\Tests\PhpDocExtractor\ConstructorOverridesPropertyDocBlock', 'date', []);
-        self::assertEquals('int', $types[0]->getBuiltinType());
+        $this->assertEquals($type, $this->extractor->getTypesFromConstructor('Symfony\Component\PropertyInfo\Tests\Fixtures\ConstructorDummy', $property));
+    }
+
+    public function constructorTypesProvider()
+    {
+        return [
+            ['date', [new Type(Type::BUILTIN_TYPE_INT)]],
+            ['timezone', [new Type(Type::BUILTIN_TYPE_OBJECT, false, 'DateTimeZone')]],
+            ['dateObject', [new Type(Type::BUILTIN_TYPE_OBJECT, false, 'DateTimeInterface')]],
+            ['dateTime', null],
+            ['ddd', null],
+        ];
     }
 }
 
@@ -236,23 +248,5 @@ class OmittedParamTagTypeDocBlock
      */
     public function setOmittedType(array $omittedTagType)
     {
-    }
-}
-
-class ConstructorOverridesPropertyDocBlock
-{
-    /** @var string */
-    private $timezone;
-    /** @var \DateTimeInterface */
-    private $date;
-
-    /**
-     * @param string $timezone
-     * @param int    $date     Timestamp
-     */
-    public function __construct($timezone, $date)
-    {
-        $this->timezone = $timezone;
-        $this->date = \DateTime::createFromFormat('U', $date);
     }
 }
